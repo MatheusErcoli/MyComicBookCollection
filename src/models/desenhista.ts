@@ -28,6 +28,9 @@ Desenhista.init({
 }, {
     sequelize,
     modelName: "Desenhista",
+    tableName: "desenhista",
     timestamps: true,
     underscored: true,
 })
+
+export default Desenhista;

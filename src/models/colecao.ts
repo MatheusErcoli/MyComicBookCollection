@@ -43,6 +43,9 @@ Colecao.init({
 }, {
     sequelize,
     modelName: "Colecao",
+    tableName: "colecao",
     timestamps: true,
     underscored: true,
 })
+
+export default Colecao;

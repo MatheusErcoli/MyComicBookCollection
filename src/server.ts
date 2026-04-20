@@ -1,23 +1,28 @@
 import express from "express";
-import { sequelize } from "./database";
+import { sequelize } from "./database"; 
+import { establishRelations } from "./models/relacoes";
 
 const app = express();
-
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("API rodando 🚀");
-});
+async function startServer() {
+  try {
+    establishRelations();
 
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log("Banco conectado com sucesso ✅");
+    await sequelize.authenticate();
+    console.log("✅ Conexão com o MySQL estabelecida.");
 
-    app.listen(3000, () => {
-      console.log("Servidor rodando na porta 3000");
+    await sequelize.sync({ alter: true });
+    console.log("✅ Tabelas sincronizadas.");
+
+    const PORT = 3000;
+    app.listen(PORT, () => {
+      console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
     });
-  })
-  .catch((err) => {
-    console.error("Erro ao conectar no banco ❌", err);
-  });
+
+  } catch (error) {
+    console.error("❌ Erro ao iniciar o servidor:", error);
+  }
+}
+
+startServer();

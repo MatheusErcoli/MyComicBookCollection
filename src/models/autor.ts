@@ -28,6 +28,9 @@ Autor.init({
 }, {
     sequelize,
     modelName: "Autor",
+    tableName: "autor",
     timestamps: true,
     underscored: true,
 })
+
+export default Autor;

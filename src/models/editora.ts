@@ -28,6 +28,9 @@ Editora.init({
 }, {
     sequelize,
     modelName: "Editora",
+    tableName: "editora",
     timestamps: true,
     underscored: true,
 })
+
+export default Editora;

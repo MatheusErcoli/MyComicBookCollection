@@ -76,7 +76,10 @@ HQ.init({
 {
     sequelize,
     modelName: "HQ",
+    tableName: "hq",
     timestamps: true,
     underscored: true,
 }
 );
+
+export default HQ;
