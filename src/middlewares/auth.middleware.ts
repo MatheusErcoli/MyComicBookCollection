@@ -1,6 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
+interface AuthTokenPayload {
+  id: number;
+  admin: boolean;
+}
+
 export function authMiddleware(req: any, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
 
@@ -14,9 +19,10 @@ export function authMiddleware(req: any, res: Response, next: NextFunction) {
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET as string
-    ) as any;
+    ) as AuthTokenPayload;
 
     req.userId = decoded.id;
+    req.userAdmin = decoded.admin;
 
     next();
   } catch (error) {

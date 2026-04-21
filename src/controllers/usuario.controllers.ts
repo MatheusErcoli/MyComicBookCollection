@@ -6,15 +6,21 @@ export default class UsuarioController {
 
   static async create(req: any, res: Response, next: NextFunction) {
     try {
-      const { nome, email, senha } = req.body;
+      const { nome, email, senha, admin } = req.body;
 
       const usuario = await UsuarioService.create({
         nome,
         email,
-        senha
+        senha,
+        admin
       });
 
-      return res.status(201).json({ id: usuario.id, nome: usuario.nome, email: usuario.email });
+      return res.status(201).json({
+        id: usuario.id,
+        nome: usuario.nome,
+        email: usuario.email,
+        admin: usuario.admin
+      });
     } catch (error) {
       next(error);
     }
@@ -55,7 +61,12 @@ export default class UsuarioController {
 
       const updated = await UsuarioService.update(id, req.body);
 
-      return res.json({ id: updated.id, nome: updated.nome, email: updated.email });
+      return res.json({
+        id: updated.id,
+        nome: updated.nome,
+        email: updated.email,
+        admin: updated.admin
+      });
     } catch (error) {
       next(error);
     }

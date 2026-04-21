@@ -3,11 +3,20 @@ import { UsuarioAttributes, UsuarioCreationAttributes } from "../types/usuario.t
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+interface JwtPayload {
+  id: number;
+  admin: boolean;
+}
+
 export default class UsuarioService {
 
-  static async create(data: Omit<UsuarioAttributes, 'id' | 'created_at' | 'updated_at'>) {
+  static async create(data: UsuarioCreationAttributes) {
     const hashedSenha = await bcrypt.hash(data.senha, 10);
-    return await Usuario.create({ ...data, senha: hashedSenha });
+    return await Usuario.create({
+      ...data,
+      senha: hashedSenha,
+      admin: data.admin ?? false
+    });
   }
 
   static async findAll(limit: number, offset: number) {
@@ -61,10 +70,27 @@ export default class UsuarioService {
       throw new Error("Senha inválida");
     }
 
-    const token = jwt.sign({ id: usuario.id }, process.env.JWT_SECRET || "secret", {
+    if (!usuario.id) {
+      throw new Error("Usuário inválido para geração do token");
+    }
+
+    const payload: JwtPayload = {
+      id: usuario.id,
+      admin: usuario.admin
+    };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET || "secret", {
       expiresIn: "1d"
     });
 
-    return { token, usuario: { id: usuario.id, nome: usuario.nome, email: usuario.email } };
+    return {
+      token,
+      usuario: {
+        id: usuario.id,
+        nome: usuario.nome,
+        email: usuario.email,
+        admin: usuario.admin
+      }
+    };
   }
 }

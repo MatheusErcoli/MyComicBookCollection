@@ -5,8 +5,9 @@ export interface UsuarioAttributes {
   nome: string;
   email: string;
   senha: string;
+  admin: boolean;
   created_at?: Date;
   updated_at?: Date;
 }
 
-export type UsuarioCreationAttributes = Optional<UsuarioAttributes, 'id' | 'created_at' | 'updated_at'>;
+export type UsuarioCreationAttributes = Optional<UsuarioAttributes, "id" | "admin" | "created_at" | "updated_at">;

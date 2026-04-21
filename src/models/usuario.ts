@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../database/index";
 import { UsuarioAttributes } from "../types/usuario.types";
 
@@ -7,6 +7,7 @@ class Usuario extends Model<UsuarioAttributes> implements UsuarioAttributes {
     public nome!: string;
     public email!: string;
     public senha!: string;
+    public admin!: boolean;
     public readonly created_at!: Date;
     public readonly updated_at!: Date;
 }
@@ -29,6 +30,11 @@ Usuario.init({
     senha: {
         type: DataTypes.STRING,
         allowNull: false,
+    },
+    admin: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
     },
 }, {
     sequelize,
