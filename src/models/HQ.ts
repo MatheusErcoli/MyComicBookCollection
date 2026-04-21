@@ -1,21 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../database/index";
-
-interface HQAttributes {
-  id: number;
-  titulo: string;
-  descricao?: string;
-  data_publicacao?: Date;
-  numero_edicao?: number;
-  capa_url?: string;
-  valor?: number;
-  valor_pago?: number;
-  formato?: string;
-  quantidade_paginas?: number;
-  editora_id?: number;
-  created_at?: Date;
-  updated_at?: Date;
-}
+import { HQAttributes } from "../types/hq.types";
 
 class HQ extends Model<HQAttributes> implements HQAttributes {
   public id!: number;

@@ -1,12 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../database/index";
-
-interface AutorAttributes {
-    id: number;
-    nome: string;
-    created_at?: Date;
-    updated_at?: Date;
-}
+import { AutorAttributes } from "../types/autor.types";
 
 class Autor extends Model<AutorAttributes> implements AutorAttributes {
     public id!: number;

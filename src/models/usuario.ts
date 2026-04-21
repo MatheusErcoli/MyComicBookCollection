@@ -1,14 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../database/index";
-
-interface UsuarioAttributes {
-    id: number;
-    nome: string;
-    email: string;
-    senha: string;
-    created_at?: Date;
-    updated_at?: Date;
-}
+import { UsuarioAttributes } from "../types/usuario.types";
 
 class Usuario extends Model<UsuarioAttributes> implements UsuarioAttributes {
     public id!: number;

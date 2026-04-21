@@ -1,12 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../database/index";
-
-interface EditoraAttributes {
-    id: number;
-    nome: string;
-    created_at?: Date;
-    updated_at?: Date;
-}
+import { EditoraAttributes } from "../types/editora.types";
 
 class Editora extends Model<EditoraAttributes> implements EditoraAttributes {
     public id!: number;

@@ -1,20 +1,10 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../database/index";
-
-interface ColecaoAttributes {
-    id: number;
-    nome: string;
-    descricao: Text;
-    ano_publicacao: number;
-    qtd_volumes: number;
-    created_at?: Date;
-    updated_at?: Date;
-}
-
+import { ColecaoAttributes } from "../types/colecao.types";
 class Colecao extends Model<ColecaoAttributes> implements ColecaoAttributes {
     public id!: number;
     public nome!: string;
-    public descricao!: Text;
+    public descricao!: string;
     public ano_publicacao!: number;
     public qtd_volumes!: number;
     public readonly created_at!: Date;

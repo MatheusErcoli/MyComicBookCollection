@@ -1,12 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../database/index";
-
-interface DesenhistaAttributes {
-    id: number;
-    nome: string;
-    created_at?: Date;
-    updated_at?: Date;
-}
+import { DesenhistaAttributes } from "../types/desenhista.types";
 
 class Desenhista extends Model<DesenhistaAttributes> implements DesenhistaAttributes {
     public id!: number;

@@ -1,4 +1,4 @@
-import HQ from "./HQ";
+import HQ from "./hq";
 import Usuario from "./usuario";
 import HQUsuario from "./hq_usuario";
 import HQDesenhista from "./hq_desenhista";
