@@ -1,13 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../database/index";
-
-interface HQDesenhistaAttributes {
-  id: number;
-  hq_id: number;
-  desenhista_id: number;
-  created_at?: Date;
-  updated_at?: Date;
-}
+import { HQDesenhistaAttributes } from "../types/hq_desenhista.types";
 
 class HQDesenhista extends Model<HQDesenhistaAttributes> implements HQDesenhistaAttributes {
   public id!: number;

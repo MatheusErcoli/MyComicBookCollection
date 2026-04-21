@@ -1,13 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../database/index";
-
-interface HQAutorAttributes {
-    id: number;
-    hq_id: number;
-    autor_id: number;
-    created_at?: Date;
-    updated_at?: Date;
-}
+import { HQAutorAttributes } from "../types/hq_autor.types";
 
 class HQAutor extends Model<HQAutorAttributes> implements HQAutorAttributes {
     public id!: number;

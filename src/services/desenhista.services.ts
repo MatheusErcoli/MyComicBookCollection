@@ -1,9 +1,10 @@
 import Desenhista from "../models/desenhista";
 import HQ from "../models/hq";
+import { DesenhistaAttributes } from "../types/desenhista.types";
 
 export default class DesenhistaService {
 
-  static async create(data: any) {
+  static async create(data: DesenhistaAttributes) {
     return await Desenhista.create(data);
   }
 
@@ -40,7 +41,7 @@ export default class DesenhistaService {
     return desenhista;
   }
 
-  static async update(id: number, data: any) {
+  static async update(id: number, data: DesenhistaAttributes) {
     const desenhista = await this.findById(id);
     return await desenhista.update(data);
   }

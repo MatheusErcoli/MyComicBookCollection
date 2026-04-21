@@ -74,4 +74,16 @@ export function establishRelations() {
     otherKey: "usuario_id",
     as: "colecionadores"
   });
+
+  HQAutor.belongsTo(HQ, { foreignKey: "hq_id", as: "hq" });
+  HQAutor.belongsTo(Autor, { foreignKey: "autor_id", as: "autor" });
+
+  HQColecao.belongsTo(HQ, { foreignKey: "hq_id", as: "hq" });
+  HQColecao.belongsTo(Colecao, { foreignKey: "colecao_id", as: "colecao" });
+
+  HQDesenhista.belongsTo(HQ, { foreignKey: "hq_id", as: "hq" });
+  HQDesenhista.belongsTo(Desenhista, { foreignKey: "desenhista_id", as: "desenhista" });
+
+  HQUsuario.belongsTo(HQ, { foreignKey: "hq_id", as: "hq" });
+  HQUsuario.belongsTo(Usuario, { foreignKey: "usuario_id", as: "usuario" });
 }

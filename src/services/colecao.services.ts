@@ -1,9 +1,10 @@
 import Colecao from "../models/colecao";
 import HQ from "../models/hq";
+import { ColecaoAttributes } from "../types/colecao.types";
 
 export default class ColecaoService {
 
-  static async create(data: any) {
+  static async create(data: ColecaoAttributes) {
     return await Colecao.create(data);
   }
 
@@ -40,7 +41,7 @@ export default class ColecaoService {
     return colecao;
   }
 
-  static async update(id: number, data: any) {
+  static async update(id: number, data: ColecaoAttributes) {
     const colecao = await this.findById(id);
     return await colecao.update(data);
   }

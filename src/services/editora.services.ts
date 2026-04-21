@@ -1,9 +1,10 @@
 import Editora from "../models/editora";
 import HQ from "../models/hq";
+import { EditoraAttributes } from "../types/editora.types";
 
 export default class EditoraService {
 
-  static async create(data: any) {
+  static async create(data: EditoraAttributes) {
     return await Editora.create(data);
   }
 
@@ -38,7 +39,7 @@ export default class EditoraService {
     return editora;
   }
 
-  static async update(id: number, data: any) {
+  static async update(id: number, data: EditoraAttributes) {
     const editora = await this.findById(id);
     return await editora.update(data);
   }

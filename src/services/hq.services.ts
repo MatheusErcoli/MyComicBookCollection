@@ -4,10 +4,11 @@ import Desenhista from "../models/desenhista";
 import Editora from "../models/editora";
 import Colecao from "../models/colecao";
 import Usuario from "../models/usuario";
+import { HQAttributes } from "../types/hq.types";
 
 export default class HQService {
 
-  static async create(data: any) {
+  static async create(data: HQAttributes) {
     return await HQ.create(data);
   }
 
@@ -82,7 +83,7 @@ export default class HQService {
     return hq;
   }
 
-  static async update(id: number, data: any) {
+  static async update(id: number, data: HQAttributes) {
     const hq = await this.findById(id);
     return await hq.update(data);
   }

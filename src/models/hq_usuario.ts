@@ -1,17 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../database/index";
-
-interface HQUsuarioAttributes {
-  id: number;
-  usuario_id: number;
-  hq_id: number;
-  status?: string;
-  nota?: number;
-  prioridade?: number;
-  data_aquisicao?: Date;
-  created_at?: Date;
-  updated_at?: Date;
-}
+import { HQUsuarioAttributes } from "../types/hq_usuario.types";
 
 class HQUsuario extends Model<HQUsuarioAttributes> implements HQUsuarioAttributes {
   public id!: number;
