@@ -5,12 +5,23 @@ import Editora from "../models/editora";
 import HQ from "../models/hq";
 import HQUsuario from "../models/hq_usuario";
 import Usuario from "../models/usuario";
-import { HQUsuarioAttributes } from "../types/hq_usuario.types";
+import { HQUsuarioAttributes, HQUsuarioCreationAttributes } from "../types/hq_usuario.types";
 
 
 export default class HQUsuarioService {
 
-  static async create(data: HQUsuarioAttributes) {
+  static async create(data: HQUsuarioCreationAttributes) {
+    const exists = await HQUsuario.findOne({
+      where: {
+        usuario_id: data.usuario_id,
+        hq_id: data.hq_id
+      }
+    });
+
+    if (exists) {
+      throw new Error("HQ já está na coleção do usuário");
+    }
+
     return await HQUsuario.create(data);
   }
 

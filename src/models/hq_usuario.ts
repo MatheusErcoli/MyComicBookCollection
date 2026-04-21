@@ -1,8 +1,14 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../database/index";
-import { HQUsuarioAttributes } from "../types/hq_usuario.types";
+import {
+  HQUsuarioAttributes,
+  HQUsuarioCreationAttributes
+} from "../types/hq_usuario.types";
 
-class HQUsuario extends Model<HQUsuarioAttributes> implements HQUsuarioAttributes {
+class HQUsuario
+  extends Model<HQUsuarioAttributes, HQUsuarioCreationAttributes>
+  implements HQUsuarioAttributes
+{
   public id!: number;
   public usuario_id!: number;
   public hq_id!: number;
@@ -26,7 +32,7 @@ HQUsuario.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "usuario", 
+        model: "usuario",
         key: "id",
       },
     },

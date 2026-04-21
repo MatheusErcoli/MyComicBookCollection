@@ -3,7 +3,7 @@ import { sequelize } from "../database/index";
 import { UsuarioAttributes } from "../types/usuario.types";
 
 class Usuario extends Model<UsuarioAttributes> implements UsuarioAttributes {
-    public id!: number;
+    public id?: number;
     public nome!: string;
     public email!: string;
     public senha!: string;

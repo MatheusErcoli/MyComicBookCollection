@@ -1,12 +1,13 @@
 import { Router } from "express";
 import HQColecaoController from "../controllers/hq_colecao.controllers";
+import { authMiddleware } from "../middlewares/auth.middleware";
 
 const router = Router();
 
-router.post("/", HQColecaoController.create);
+router.post("/", authMiddleware, HQColecaoController.create);
 router.get("/", HQColecaoController.findAll);
 router.get("/:id", HQColecaoController.findOne);
-router.put("/:id", HQColecaoController.update);
-router.delete("/:id", HQColecaoController.delete);
+router.put("/:id", authMiddleware, HQColecaoController.update);
+router.delete("/:id", authMiddleware, HQColecaoController.delete);
 
 export default router;
