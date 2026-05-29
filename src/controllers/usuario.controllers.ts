@@ -6,12 +6,13 @@ export default class UsuarioController {
 
   static async create(req: any, res: Response, next: NextFunction) {
     try {
-      const { nome, email, senha, admin } = req.body;
+      const { nome, email, senha, quando_comecou, admin } = req.body;
 
       const usuario = await UsuarioService.create({
         nome,
         email,
         senha,
+        quando_comecou,
         admin
       });
 
@@ -19,6 +20,7 @@ export default class UsuarioController {
         id: usuario.id,
         nome: usuario.nome,
         email: usuario.email,
+        quando_comecou: usuario.quando_comecou,
         admin: usuario.admin
       });
     } catch (error) {
@@ -65,6 +67,7 @@ export default class UsuarioController {
         id: updated.id,
         nome: updated.nome,
         email: updated.email,
+        quando_comecou: updated.quando_comecou,
         admin: updated.admin
       });
     } catch (error) {

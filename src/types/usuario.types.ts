@@ -5,6 +5,7 @@ export interface UsuarioAttributes {
   nome: string;
   email: string;
   senha: string;
+  quando_comecou: Date;
   admin: boolean;
   created_at?: Date;
   updated_at?: Date;

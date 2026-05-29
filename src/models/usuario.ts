@@ -7,6 +7,7 @@ class Usuario extends Model<UsuarioAttributes> implements UsuarioAttributes {
     public nome!: string;
     public email!: string;
     public senha!: string;
+    public quando_comecou!: Date;
     public admin!: boolean;
     public readonly created_at!: Date;
     public readonly updated_at!: Date;
@@ -31,12 +32,16 @@ Usuario.init({
         type: DataTypes.STRING,
         allowNull: false,
     },
+    quando_comecou: {
+        type: DataTypes.DATE,
+        allowNull: false,
+    },
     admin: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
     },
-}, {
+} as any, {
     sequelize,
     modelName: "Usuario",
     tableName: "usuario",
