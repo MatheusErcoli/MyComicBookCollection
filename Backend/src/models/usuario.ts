@@ -7,7 +7,7 @@ class Usuario extends Model<UsuarioAttributes> implements UsuarioAttributes {
     public nome!: string;
     public email!: string;
     public senha!: string;
-    public quando_comecou!: Date;
+    public quando_comecou!: Date | null;
     public admin!: boolean;
     public readonly created_at!: Date;
     public readonly updated_at!: Date;
@@ -34,7 +34,7 @@ Usuario.init({
     },
     quando_comecou: {
         type: DataTypes.DATE,
-        allowNull: false,
+        allowNull: true,
     },
     admin: {
         type: DataTypes.BOOLEAN,

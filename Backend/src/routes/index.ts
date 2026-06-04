@@ -12,8 +12,11 @@ import hqDesenhistaRoutes from "./hq_desenhista.routes";
 import hqColecaoRoutes from "./hq_colecao.routes";
 import hqUsuarioRoutes from "./hq_usuario.routes";
 import UsuarioController from "../controllers/usuario.controllers";
+import cors from "cors";
 
 const router = Router();
+
+
 
 router.use("/hq", hqRoutes);
 router.use("/usuario", usuarioRoutes);
