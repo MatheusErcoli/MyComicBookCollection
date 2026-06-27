@@ -2,7 +2,8 @@ import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../database/index";
 import {
   HQUsuarioAttributes,
-  HQUsuarioCreationAttributes
+  HQUsuarioCreationAttributes,
+  HQUsuarioStatus
 } from "../types/hq_usuario.types";
 
 class HQUsuario
@@ -12,7 +13,7 @@ class HQUsuario
   public id!: number;
   public usuario_id!: number;
   public hq_id!: number;
-  public status?: string;
+  public status?: HQUsuarioStatus;
   public nota?: number;
   public prioridade?: number;
   public data_aquisicao?: Date;
@@ -45,7 +46,7 @@ HQUsuario.init(
       },
     },
     status: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM(...Object.values(HQUsuarioStatus)),
       allowNull: true,
     },
     nota: {

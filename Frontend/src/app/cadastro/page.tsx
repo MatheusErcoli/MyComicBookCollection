@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { api } from "@/src/services/api";
+import { getApiErrorMessage } from "@/src/services/api";
+import { cadastrarUsuario } from "@/src/services/auth.service";
 
 export default function CadastroPage() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export default function CadastroPage() {
     try {
       setLoading(true);
 
-      await api.post("/usuario", {
+      await cadastrarUsuario({
         nome,
         email,
         senha,
@@ -31,13 +32,7 @@ export default function CadastroPage() {
       router.push("/login");
     } catch (error) {
       console.error(error);
-
-      const serverErrorMessage =
-        typeof error === "object" && error !== null && "response" in error
-          ? (error as { response?: { data?: { error?: string } } }).response?.data?.error
-          : undefined;
-
-      alert(serverErrorMessage ?? "Erro ao criar conta.");
+      alert(getApiErrorMessage(error, "Erro ao criar conta."));
     } finally {
       setLoading(false);
     }
@@ -51,15 +46,12 @@ export default function CadastroPage() {
         </h1>
 
         <p className="text-[#94A3B8] text-center mt-2">
-          Cadastre-se para começar a organizar sua coleção de HQs
+          Cadastre-se para comecar a organizar sua colecao de HQs
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-5">
           <div>
-            <label
-              htmlFor="nome"
-              className="block text-[#F8FAFC] mb-2"
-            >
+            <label htmlFor="nome" className="block text-[#F8FAFC] mb-2">
               Nome
             </label>
 
@@ -86,10 +78,7 @@ export default function CadastroPage() {
           </div>
 
           <div>
-            <label
-              htmlFor="email"
-              className="block text-[#F8FAFC] mb-2"
-            >
+            <label htmlFor="email" className="block text-[#F8FAFC] mb-2">
               E-mail
             </label>
 
@@ -116,10 +105,7 @@ export default function CadastroPage() {
           </div>
 
           <div>
-            <label
-              htmlFor="senha"
-              className="block text-[#F8FAFC] mb-2"
-            >
+            <label htmlFor="senha" className="block text-[#F8FAFC] mb-2">
               Senha
             </label>
 
@@ -150,7 +136,7 @@ export default function CadastroPage() {
               htmlFor="quando_comecou"
               className="block text-[#F8FAFC] mb-2"
             >
-              Quando começou a colecionar?
+              Quando comecou a colecionar?
             </label>
 
             <input
@@ -196,11 +182,8 @@ export default function CadastroPage() {
         </form>
 
         <p className="text-center text-[#94A3B8] mt-6">
-          Já possui conta?{" "}
-          <Link
-            href="/login"
-            className="text-[#3B82F6] hover:text-blue-400"
-          >
+          Ja possui conta?{" "}
+          <Link href="/login" className="text-[#3B82F6] hover:text-blue-400">
             Fazer login
           </Link>
         </p>

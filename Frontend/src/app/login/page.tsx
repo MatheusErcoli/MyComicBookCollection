@@ -1,6 +1,7 @@
 "use client";
 
-import { api } from "@/src/services/api";
+import { getApiErrorMessage } from "@/src/services/api";
+import { login } from "@/src/services/auth.service";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -18,26 +19,15 @@ export default function LoginPage() {
     try {
       setLoading(true);
 
-      const response = await api.post("/login", {
+      await login({
         email,
         senha,
       });
 
-      const { token, usuario } = response.data;
-
-      localStorage.setItem("token", token);
-      localStorage.setItem("usuario", JSON.stringify(usuario));
-
       router.push("/");
     } catch (error: unknown) {
       console.error(error);
-
-      const serverErrorMessage =
-        typeof error === "object" && error !== null && "response" in error
-          ? (error as { response?: { data?: { error?: string } } }).response?.data?.error
-          : undefined;
-
-      alert(serverErrorMessage ?? "Email ou senha inválidos");
+      alert(getApiErrorMessage(error, "Email ou senha invalidos"));
     } finally {
       setLoading(false);
     }
@@ -81,11 +71,8 @@ export default function LoginPage() {
         </form>
 
         <p className="text-center text-slate-400 mt-6">
-          Não possui conta?{" "}
-          <Link
-            href="/cadastro"
-            className="text-blue-500 hover:text-blue-400"
-          >
+          Nao possui conta?{" "}
+          <Link href="/cadastro" className="text-blue-500 hover:text-blue-400">
             Cadastre-se
           </Link>
         </p>

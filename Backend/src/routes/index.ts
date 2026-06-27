@@ -11,6 +11,7 @@ import hqAutorRoutes from "./hq_autor.routes";
 import hqDesenhistaRoutes from "./hq_desenhista.routes";
 import hqColecaoRoutes from "./hq_colecao.routes";
 import hqUsuarioRoutes from "./hq_usuario.routes";
+import dashboardRoutes from "./dashboard.routes";
 import UsuarioController from "../controllers/usuario.controllers";
 import cors from "cors";
 
@@ -29,6 +30,7 @@ router.use("/hq-autor", hqAutorRoutes);
 router.use("/hq-desenhista", hqDesenhistaRoutes);
 router.use("/hq-colecao", hqColecaoRoutes);
 router.use("/hq-usuario", hqUsuarioRoutes);
+router.use("/dashboard", dashboardRoutes);
 router.post("/login", UsuarioController.login);
 
 export default router;
