@@ -9,6 +9,7 @@ export interface HQAttributes {
   valor_pago?: number;
   formato?: string;
   quantidade_paginas?: number;
+  lido?: boolean;
   editora_id?: number;
   created_at?: Date;
   updated_at?: Date;

@@ -13,6 +13,7 @@ class HQ extends Model<HQAttributes> implements HQAttributes {
   public valor_pago?: number;
   public formato?: string;
   public quantidade_paginas?: number;
+  public lido!: boolean;
   public editora_id?: number;
 
   public readonly created_at!: Date;
@@ -52,6 +53,10 @@ HQ.init({
     },
     quantidade_paginas: {
       type: DataTypes.INTEGER,
+    },
+    lido: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     },
     editora_id: {
       type: DataTypes.INTEGER,
