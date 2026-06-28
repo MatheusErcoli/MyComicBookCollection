@@ -8,6 +8,7 @@ import { getAuthToken, getStoredUser } from "@/src/services/auth-storage";
 import { logout } from "@/src/services/auth.service";
 import { buscarResumoDashboard } from "@/src/services/dashboard.service";
 import { DashboardResumo } from "@/src/types/dashboard.types";
+import Sidebar from "@/src/components/Sidebar";
 
 type IconProps = {
   className?: string;
@@ -227,79 +228,19 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen bg-[#0f1726] text-white">
       <div className="flex min-h-screen">
-        <aside className="hidden w-[244px] shrink-0 border-r border-[#253247] bg-[#0b1322] px-4 py-5 md:flex md:flex-col">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#ef4444] text-white">
-              <BookIcon className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="text-base font-bold leading-tight">ComicVault</p>
-              <p className="text-xs text-[#a8c4e8]">Sua colecao</p>
-            </div>
-          </div>
-
-          <nav className="mt-8 space-y-2">
-            <Link
-              href="/"
-              className="flex h-11 items-center gap-3 rounded-xl bg-[#f83f45] px-4 text-sm font-semibold text-white"
-            >
-              <GridIcon className="h-4 w-4" />
-              Dashboard
-            </Link>
-            <Link
-              href="/minha-colecao"
-              className="flex h-11 items-center gap-3 rounded-xl px-4 text-sm font-medium text-[#9fc9ff] transition hover:bg-[#142033]"
-            >
-              <BarIcon className="h-4 w-4 text-[#93a4bb]" />
-              Minha Colecao
-            </Link>
-            <Link
-              href="/sagas"
-              className="flex h-11 items-center gap-3 rounded-xl px-4 text-sm font-medium text-[#9fc9ff] transition hover:bg-[#142033]"
-            >
-              <ArchiveIcon className="h-4 w-4 text-[#93a4bb]" />
-              Sagas
-            </Link>
-            <Link
-              href="/wishlist"
-              className="flex h-11 items-center gap-3 rounded-xl px-4 text-sm font-medium text-[#9fc9ff] transition hover:bg-[#142033]"
-            >
-              <HeartIcon className="h-4 w-4 text-[#93a4bb]" />
-              Wishlist
-            </Link>
-            <Link
-              href="/admin"
-              className="flex h-11 items-center gap-3 rounded-xl px-4 text-sm font-medium text-[#9fc9ff] transition hover:bg-[#142033]"
-            >
-              <SettingsIcon className="h-4 w-4 text-[#93a4bb]" />
-              Admin
-            </Link>
-          </nav>
-
-          <div className="mt-auto border-t border-[#253247] pt-4">
-            <p className="truncate text-xs text-[#9fc9ff]">{email}</p>
-            <div className="mt-4 flex items-center justify-around text-[#d8e5f8]">
-              <button
-                type="button"
-                aria-label="Alternar tema"
-                className="rounded-lg p-2 transition hover:bg-[#142033]"
-              >
-                <SunIcon className="h-4 w-4" />
-              </button>
-              <button
-                type="button"
-                aria-label="Sair"
-                className="rounded-lg p-2 transition hover:bg-[#142033]"
-                onClick={() => {
-                  logout();
-                  router.push("/login");
-                }}
-              >
-                <LogoutIcon className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-        </aside>
+        <Sidebar
+          email={email}
+          logout={logout}
+          router={router}
+          BookIcon={BookIcon}
+          GridIcon={GridIcon}
+          BarIcon={BarIcon}
+          ArchiveIcon={ArchiveIcon}
+          HeartIcon={HeartIcon}
+          SettingsIcon={SettingsIcon}
+          SunIcon={SunIcon}
+          LogoutIcon={LogoutIcon}
+        />
 
         <section className="flex-1 px-5 py-6 md:px-8 lg:px-8">
           <header>
