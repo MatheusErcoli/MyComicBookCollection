@@ -13,6 +13,7 @@ import hqColecaoRoutes from "./hq_colecao.routes";
 import hqUsuarioRoutes from "./hq_usuario.routes";
 import dashboardRoutes from "./dashboard.routes";
 import UsuarioController from "../controllers/usuario.controllers";
+import colecaoPaginaRoutes from "./colecaoPagina.routes";
 import cors from "cors";
 
 const router = Router();
@@ -31,6 +32,7 @@ router.use("/hq-desenhista", hqDesenhistaRoutes);
 router.use("/hq-colecao", hqColecaoRoutes);
 router.use("/hq-usuario", hqUsuarioRoutes);
 router.use("/dashboard", dashboardRoutes);
+router.use("/minha-colecao", colecaoPaginaRoutes)
 router.post("/login", UsuarioController.login);
 
 export default router;
