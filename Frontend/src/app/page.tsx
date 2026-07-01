@@ -29,6 +29,7 @@ const emptyResumo: DashboardResumo = {
   lendo: 0,
   naoLidas: 0,
   wishlist: 0,
+  ultimasAdicionadas: [],
 };
 
 
@@ -165,17 +166,61 @@ export default function DashboardPage() {
           </div>
 
           <section className="mt-8">
-            <h2 className="text-2xl font-bold text-white">Ultimas adicionadas</h2>
+            <h2 className="text-2xl font-bold text-white">
+              Ultimas adicionadas
+            </h2>
 
-            <div className="mt-4 flex min-h-[122px] items-center justify-center rounded-xl border border-[#28374e] bg-[#1d2a3d] px-5 text-center">
-              <p className="text-base text-[#a8c4e8]">
-                Nenhuma HQ na sua colecao ainda. Va em{" "}
-                <Link href="/minha-colecao" className="text-[#2f87ff] hover:text-[#61a5ff]">
-                  Minha Colecao
-                </Link>{" "}
-                para comecar.
-              </p>
-            </div>
+            {resumo.ultimasAdicionadas.length === 0 ? (
+              <div className="mt-4 flex min-h-[122px] items-center justify-center rounded-xl border border-[#28374e] bg-[#1d2a3d] px-5 text-center">
+                <p className="text-base text-[#a8c4e8]">
+                  Nenhuma HQ na sua coleção ainda. Vá em{" "}
+                  <Link
+                    href="/minha-colecao"
+                    className="text-[#2f87ff] hover:text-[#61a5ff]"
+                  >
+                    Minha Coleção
+                  </Link>{" "}
+                  para começar.
+                </p>
+              </div>
+            ) : (
+              <div className="mt-4 space-y-3">
+                {resumo.ultimasAdicionadas.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center gap-4 rounded-xl border border-[#28374e] bg-[#1d2a3d] p-4"
+                  >
+                    <div className="h-20 w-14 overflow-hidden rounded bg-slate-700">
+                      {item.hq.capa_url ? (
+                        <img
+                          src={item.hq.capa_url}
+                          alt={item.hq.titulo}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-xs text-slate-400">
+                          Sem capa
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <h3 className="font-semibold text-white">
+                        {item.hq.titulo}
+                      </h3>
+
+                      <p className="text-sm text-[#a8c4e8]">
+                        Edição {item.hq.numero_edicao ?? "-"}
+                      </p>
+
+                      <p className="text-sm text-slate-400">
+                        {item.hq.editora?.nome ?? "-"}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
         </section>
       </div>

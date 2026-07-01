@@ -1,25 +1,27 @@
+import { sequelize } from "../database";
+import Editora from "../models/editora";
+import HQ from "../models/hq";
 import HQUsuario from "../models/hq_usuario";
 import { HQUsuarioStatus } from "../types/hq_usuario.types";
-import { sequelize } from "../database";
 
 export default class DashboardService {
-
   static async index(userId: number) {
-
     const raw = await HQUsuario.findAll({
       where: {
         usuario_id: userId,
       },
       attributes: [
         "status",
-        [sequelize.fn("COUNT", "*"), "total"]
+        [sequelize.fn("COUNT", "*"), "total"],
       ],
       group: ["status"],
       raw: true,
     });
 
     const totalHQs = await HQUsuario.count({
-      where: { usuario_id: userId }
+      where: {
+        usuario_id: userId,
+      },
     });
 
     const formatado = {
@@ -49,9 +51,38 @@ export default class DashboardService {
       }
     });
 
+    const ultimasAdicionadas = await HQUsuario.findAll({
+      where: {
+        usuario_id: userId,
+      },
+      include: [
+        {
+          model: HQ,
+          as: "hq",
+          attributes: [
+            "id",
+            "titulo",
+            "numero_edicao",
+            "capa_url",
+            "valor_pago",
+          ],
+          include: [
+            {
+              model: Editora,
+              as: "editora",
+              attributes: ["id", "nome"],
+            },
+          ],
+        },
+      ],
+      order: [["created_at", "DESC"]],
+      limit: 5,
+    });
+
     return {
       totalHQs,
       ...formatado,
+      ultimasAdicionadas,
     };
   }
 }
