@@ -31,7 +31,12 @@ export interface HQ {
 }
 
 export interface CollectionResponse {
-  hqs: HQ[];
+  totalItems: number;
+  totalPages: number;
+  currentPage: number;
+
+  items: HQ[];
+
   editoras: Editora[];
   autores: Autor[];
 }

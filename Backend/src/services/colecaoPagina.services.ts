@@ -4,8 +4,12 @@ import HQ from "../models/hq";
 import HQUsuario from "../models/hq_usuario";
 
 export default class CollectionService {
-  static async index(userId: number) {
-    const hqs = await HQUsuario.findAll({
+  static async index(
+    userId: number,
+    limit: number,
+    offset: number
+  ) {
+    const { count, rows } = await HQUsuario.findAndCountAll({
       where: {
         usuario_id: userId,
       },
@@ -30,6 +34,8 @@ export default class CollectionService {
         },
       ],
       order: [["created_at", "DESC"]],
+      limit,
+      offset,
     });
 
     const editoras = await Editora.findAll({
@@ -43,7 +49,8 @@ export default class CollectionService {
     });
 
     return {
-      hqs,
+      count,
+      rows,
       editoras,
       autores,
     };

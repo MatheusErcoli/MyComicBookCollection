@@ -1,12 +1,39 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import CollectionService from "../services/colecaoPagina.services";
+import { getPaginacao, getPaginacaoDados } from "../utils/paginacao";
 
 export default class CollectionController {
-  static async index(req: Request, res: Response) {
-    const userId = req.userId!;
+  static async index(req: any, res: Response, next: NextFunction) {
+    try {
+      const { page, limit } = req.query;
 
-    const hqs = await CollectionService.index(userId);
+      const { limit: limitNumber, offset, page: pageNumber } = getPaginacao(
+        Number(page),
+        Number(limit)
+      );
 
-    return res.json(hqs);
+      const data = await CollectionService.index(
+        req.userId,
+        limitNumber,
+        offset
+      );
+
+      const response = getPaginacaoDados(
+        {
+          count: data.count,
+          rows: data.rows,
+        },
+        pageNumber,
+        limitNumber
+      );
+
+      return res.json({
+        ...response,
+        editoras: data.editoras,
+        autores: data.autores,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
 }
