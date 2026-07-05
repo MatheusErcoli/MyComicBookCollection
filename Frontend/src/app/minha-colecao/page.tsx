@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 import Sidebar from "@/src/components/Sidebar";
 import Pagination from "@/src/components/Pagination";
-import HQTable from "@/src/components/HQTable";
+import HQCard from "@/src/components/HQCard";
 
 import {
   BookIcon,
@@ -123,8 +123,13 @@ export default function MinhaColecaoPage() {
             </div>
           </div>
 
-          <div className="mt-8">
-            <HQTable hqs={colecao.items} />
+          <div className="mt-8 grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {colecao.items.map((hq) => (
+              <HQCard
+                key={hq.id}
+                hq={hq}
+              />
+            ))}
           </div>
 
           <Pagination
