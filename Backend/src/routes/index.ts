@@ -6,10 +6,12 @@ import autorRoutes from "./autor.routes";
 import desenhistaRoutes from "./desenhista.routes";
 import editoraRoutes from "./editora.routes";
 import colecaoRoutes from "./colecao.routes";
+import volumeRoutes from "./volume.routes";
 
 import hqAutorRoutes from "./hq_autor.routes";
 import hqDesenhistaRoutes from "./hq_desenhista.routes";
 import hqColecaoRoutes from "./hq_colecao.routes";
+import hqVolumeRoutes from "./hq_volume.routes";
 import hqUsuarioRoutes from "./hq_usuario.routes";
 import dashboardRoutes from "./dashboard.routes";
 import UsuarioController from "../controllers/usuario.controllers";
@@ -26,10 +28,12 @@ router.use("/autor", autorRoutes);
 router.use("/desenhista", desenhistaRoutes);
 router.use("/editora", editoraRoutes);
 router.use("/colecao", colecaoRoutes);
+router.use("/volume", volumeRoutes);
 
 router.use("/hq-autor", hqAutorRoutes);
 router.use("/hq-desenhista", hqDesenhistaRoutes);
 router.use("/hq-colecao", hqColecaoRoutes);
+router.use("/hq-volume", hqVolumeRoutes);
 router.use("/hq-usuario", hqUsuarioRoutes);
 router.use("/dashboard", dashboardRoutes);
 router.use("/minha-colecao", colecaoPaginaRoutes)

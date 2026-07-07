@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 interface SidebarProps {
@@ -30,6 +31,16 @@ export default function Sidebar({
   SunIcon,
   LogoutIcon,
 }: SidebarProps) {
+  const pathname = usePathname();
+
+  const links = [
+    { href: "/", label: "Dashboard", Icon: GridIcon },
+    { href: "/minha-colecao", label: "Minha Coleção", Icon: BarIcon },
+    { href: "/sagas", label: "Sagas", Icon: ArchiveIcon },
+    { href: "/wishlist", label: "Wishlist", Icon: HeartIcon },
+    { href: "/admin", label: "Admin", Icon: SettingsIcon },
+  ];
+
   return (
     <aside className="hidden w-[244px] shrink-0 border-r border-[#253247] bg-[#0b1322] px-4 py-5 md:flex md:flex-col">
       <div className="flex items-center gap-3">
@@ -44,45 +55,27 @@ export default function Sidebar({
       </div>
 
       <nav className="mt-8 space-y-2">
-        <Link
-          href="/"
-          className="flex h-11 items-center gap-3 rounded-xl bg-[#f83f45] px-4 text-sm font-semibold text-white"
-        >
-          <GridIcon className="h-4 w-4" />
-          Dashboard
-        </Link>
+        {links.map(({ href, label, Icon }) => {
+          const isActive =
+            href === "/" ? pathname === "/" : pathname?.startsWith(href);
 
-        <Link
-          href="/minha-colecao"
-          className="flex h-11 items-center gap-3 rounded-xl px-4 text-sm font-medium text-[#9fc9ff] transition hover:bg-[#142033]"
-        >
-          <BarIcon className="h-4 w-4 text-[#93a4bb]" />
-          Minha Coleção
-        </Link>
-
-        <Link
-          href="/sagas"
-          className="flex h-11 items-center gap-3 rounded-xl px-4 text-sm font-medium text-[#9fc9ff] transition hover:bg-[#142033]"
-        >
-          <ArchiveIcon className="h-4 w-4 text-[#93a4bb]" />
-          Sagas
-        </Link>
-
-        <Link
-          href="/wishlist"
-          className="flex h-11 items-center gap-3 rounded-xl px-4 text-sm font-medium text-[#9fc9ff] transition hover:bg-[#142033]"
-        >
-          <HeartIcon className="h-4 w-4 text-[#93a4bb]" />
-          Wishlist
-        </Link>
-
-        <Link
-          href="/admin"
-          className="flex h-11 items-center gap-3 rounded-xl px-4 text-sm font-medium text-[#9fc9ff] transition hover:bg-[#142033]"
-        >
-          <SettingsIcon className="h-4 w-4 text-[#93a4bb]" />
-          Admin
-        </Link>
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={
+                isActive
+                  ? "flex h-11 items-center gap-3 rounded-xl bg-[#f83f45] px-4 text-sm font-semibold text-white"
+                  : "flex h-11 items-center gap-3 rounded-xl px-4 text-sm font-medium text-[#9fc9ff] transition hover:bg-[#142033]"
+              }
+            >
+              <Icon
+                className={`h-4 w-4 ${isActive ? "" : "text-[#93a4bb]"}`}
+              />
+              {label}
+            </Link>
+          );
+        })}
       </nav>
 
       <div className="mt-auto border-t border-[#253247] pt-4">
