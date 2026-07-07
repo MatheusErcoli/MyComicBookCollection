@@ -107,10 +107,8 @@ export async function deletarColecao(id: number) {
 }
 
 export async function listarVolumes() {
-  const { data } = await api.get<PaginacaoResponse<Volume>>(
-    `/volume?limit=${ALL_LIMIT}`
-  );
-  return data.data;
+  const { data } = await api.get<Volume[]>("/volume");
+  return data;
 }
 
 export async function criarVolume(payload: Partial<Volume>) {
