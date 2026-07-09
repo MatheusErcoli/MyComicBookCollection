@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Sidebar from "@/src/components/Sidebar";
 import Pagination from "@/src/components/Pagination";
 import HQCard from "@/src/components/HQCard";
+import AdicionarHQModal from "@/src/components/AdicionarHQModal";
 
 import {
   BookIcon,
@@ -37,13 +38,16 @@ export default function MinhaColecaoPage() {
 
   const [email, setEmail] = useState("");
   const [paginaAtual, setPaginaAtual] = useState(1);
+  const [modalAberto, setModalAberto] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
   const [colecao, setColecao] = useState<CollectionResponse>(emptyCollection);
 
   useEffect(() => {
     async function carregar() {
-      const usuario = getStoredUser();
+      await Promise.resolve();
 
+      const usuario = getStoredUser();
       setEmail(usuario?.email ?? "");
 
       const data = await buscarMinhaColecao(paginaAtual);
@@ -52,7 +56,7 @@ export default function MinhaColecaoPage() {
     }
 
     carregar();
-  }, [paginaAtual]);
+  }, [paginaAtual, reloadKey]);
 
   return (
     <main className="min-h-screen bg-[#0f1726] text-white">
@@ -81,7 +85,11 @@ export default function MinhaColecaoPage() {
               </p>
             </div>
 
-            <button className="rounded-xl bg-red-500 px-5 py-3 font-semibold text-white transition hover:bg-red-600">
+            <button
+              type="button"
+              onClick={() => setModalAberto(true)}
+              className="rounded-xl bg-red-500 px-5 py-3 font-semibold text-white transition hover:bg-red-600"
+            >
               + Adicionar HQ
             </button>
           </div>
@@ -139,6 +147,13 @@ export default function MinhaColecaoPage() {
           />
         </section>
       </div>
+
+      {modalAberto ? (
+        <AdicionarHQModal
+          onClose={() => setModalAberto(false)}
+          onAdicionado={() => setReloadKey((key) => key + 1)}
+        />
+      ) : null}
     </main>
   );
 }
