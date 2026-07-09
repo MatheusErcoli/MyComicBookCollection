@@ -28,7 +28,10 @@ export default class CollectionController {
       );
 
       return res.json({
-        ...response,
+        totalItems: response.totalItems,
+        totalPages: response.totalPages,
+        currentPage: response.currentPage,
+        items: response.data,
         editoras: data.editoras,
         autores: data.autores,
       });
