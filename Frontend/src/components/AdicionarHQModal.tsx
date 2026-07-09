@@ -31,19 +31,26 @@ export default function AdicionarHQModal({
 
   useEffect(() => {
     async function carregar() {
-      try {
-        const [hqsRecentes, minhaColecao] = await Promise.all([
-          buscarHQsRecentes(30),
-          buscarMinhaColecao(1, 1000),
-        ]);
+      const resultados = await Promise.allSettled([
+        buscarHQsRecentes(30),
+        buscarMinhaColecao(1, 1000),
+      ]);
 
-        setHqs(hqsRecentes);
-        setIdsNaColecao(minhaColecao.items.map((item) => item.hq_id));
-      } catch (err) {
-        setError(getApiErrorMessage(err, "Erro ao carregar HQs recentes."));
-      } finally {
-        setLoading(false);
+      const [resultadoHqs, resultadoColecao] = resultados;
+
+      if (resultadoHqs.status === "fulfilled") {
+        setHqs(resultadoHqs.value);
+      } else {
+        setError(
+          getApiErrorMessage(resultadoHqs.reason, "Erro ao carregar HQs recentes.")
+        );
       }
+
+      if (resultadoColecao.status === "fulfilled") {
+        setIdsNaColecao(resultadoColecao.value.items.map((item) => item.hq_id));
+      }
+
+      setLoading(false);
     }
 
     carregar();
