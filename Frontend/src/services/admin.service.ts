@@ -92,6 +92,11 @@ export async function listarColecoes() {
   return data.data;
 }
 
+export async function buscarColecao(id: number) {
+  const { data } = await api.get<Colecao>(`/colecao/${id}`);
+  return data;
+}
+
 export async function criarColecao(payload: Partial<Colecao>) {
   const { data } = await api.post<Colecao>("/colecao", payload);
   return data;

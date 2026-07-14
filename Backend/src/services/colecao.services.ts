@@ -1,5 +1,6 @@
 import Colecao from "../models/colecao";
 import HQ from "../models/hq";
+import Editora from "../models/editora";
 import { ColecaoAttributes } from "../types/colecao.types";
 
 export default class ColecaoService {
@@ -17,7 +18,13 @@ export default class ColecaoService {
         {
           model: HQ,
           as: "hq",
-          through: { attributes: [] }
+          through: { attributes: ["ordem"] },
+          include: [
+            {
+              model: Editora,
+              as: "editora"
+            }
+          ]
         }
       ]
     });
@@ -29,7 +36,13 @@ export default class ColecaoService {
         {
           model: HQ,
           as: "hq",
-          through: { attributes: [] }
+          through: { attributes: ["ordem"] },
+          include: [
+            {
+              model: Editora,
+              as: "editora"
+            }
+          ]
         }
       ]
     });

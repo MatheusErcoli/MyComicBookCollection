@@ -124,3 +124,11 @@ export function LogoutIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function BookmarkIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className} aria-hidden="true">
+      <path d="M6 3.5A1.5 1.5 0 0 1 7.5 2h9A1.5 1.5 0 0 1 18 3.5V21l-6-4-6 4V3.5z" />
+    </svg>
+  );
+}

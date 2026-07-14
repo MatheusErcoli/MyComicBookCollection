@@ -13,12 +13,21 @@ export interface Desenhista {
   nome: string;
 }
 
+export interface SagaHQItem {
+  id: number;
+  titulo: string;
+  capa_url?: string | null;
+  editora?: Editora | null;
+  HQColecao?: { ordem: number | null } | null;
+}
+
 export interface Colecao {
   id: number;
   nome: string;
   descricao?: string | null;
   ano_publicacao?: number | null;
   qtd_volumes?: number | null;
+  hq?: SagaHQItem[];
 }
 
 export interface Volume {
