@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import { sequelize } from "../database";
 import Editora from "../models/editora";
 import HQ from "../models/hq";
@@ -51,6 +52,36 @@ export default class DashboardService {
       }
     });
 
+    const statusPossuidos = [
+      HQUsuarioStatus.NAO_LIDA,
+      HQUsuarioStatus.LENDO,
+      HQUsuarioStatus.LIDA,
+    ];
+
+    const totaisFinanceiros = await HQUsuario.findAll({
+      where: {
+        usuario_id: userId,
+        status: { [Op.in]: statusPossuidos },
+      },
+      include: [
+        {
+          model: HQ,
+          as: "hq",
+          attributes: [],
+        },
+      ],
+      attributes: [
+        [sequelize.fn("SUM", sequelize.col("hq.valor")), "valorColecao"],
+        [sequelize.fn("SUM", sequelize.col("hq.valor_pago")), "totalInvestido"],
+      ],
+      raw: true,
+    });
+
+    const valorColecao = Number((totaisFinanceiros[0] as any)?.valorColecao ?? 0);
+    const totalInvestido = Number(
+      (totaisFinanceiros[0] as any)?.totalInvestido ?? 0
+    );
+
     const ultimasAdicionadas = await HQUsuario.findAll({
       where: {
         usuario_id: userId,
@@ -82,6 +113,8 @@ export default class DashboardService {
     return {
       totalHQs,
       ...formatado,
+      valorColecao,
+      totalInvestido,
       ultimasAdicionadas,
     };
   }

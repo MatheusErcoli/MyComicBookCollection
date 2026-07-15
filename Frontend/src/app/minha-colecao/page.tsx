@@ -20,9 +20,10 @@ import {
 } from "@/src/components/icons";
 
 import { logout } from "@/src/services/auth.service";
-import { getStoredUser } from "@/src/services/auth-storage";
+import { getAuthToken, getStoredUser } from "@/src/services/auth-storage";
 import { buscarMinhaColecao } from "@/src/services/colecaoPagina.service";
 import { CollectionResponse } from "@/src/types/colecaoPagina.types";
+import { HQUsuarioStatus } from "@/src/types/minhaColecaoItem";
 
 const emptyCollection: CollectionResponse = {
   totalItems: 0,
@@ -41,22 +42,59 @@ export default function MinhaColecaoPage() {
   const [modalAberto, setModalAberto] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
 
+  const [busca, setBusca] = useState("");
+  const [buscaDebounced, setBuscaDebounced] = useState("");
+  const [statusFiltro, setStatusFiltro] = useState("");
+  const [editoraFiltro, setEditoraFiltro] = useState("");
+  const [autorFiltro, setAutorFiltro] = useState("");
+
   const [colecao, setColecao] = useState<CollectionResponse>(emptyCollection);
 
+ 
   useEffect(() => {
+    const timeout = setTimeout(() => {
+      setBuscaDebounced(busca.trim());
+      setPaginaAtual(1);
+    }, 400);
+
+    return () => clearTimeout(timeout);
+  }, [busca]);
+
+
+  useEffect(() => {
+    const token = getAuthToken();
+
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
     async function carregar() {
       await Promise.resolve();
 
       const usuario = getStoredUser();
       setEmail(usuario?.email ?? "");
 
-      const data = await buscarMinhaColecao(paginaAtual);
+      const data = await buscarMinhaColecao(paginaAtual, 20, {
+        search: buscaDebounced || undefined,
+        status: statusFiltro || undefined,
+        editoraId: editoraFiltro ? Number(editoraFiltro) : undefined,
+        autorId: autorFiltro ? Number(autorFiltro) : undefined,
+      });
 
       setColecao(data);
     }
 
     carregar();
-  }, [paginaAtual, reloadKey]);
+  }, [
+    paginaAtual,
+    reloadKey,
+    buscaDebounced,
+    statusFiltro,
+    editoraFiltro,
+    autorFiltro,
+    router,
+  ]);
 
   return (
     <main className="min-h-screen bg-[#0f1726] text-white">
@@ -98,19 +136,35 @@ export default function MinhaColecaoPage() {
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
               <input
                 type="text"
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
                 placeholder="Pesquisar HQ..."
                 className="rounded-lg border border-[#334155] bg-[#0f1726] px-4 py-3 text-white placeholder:text-slate-500 focus:border-red-500 focus:outline-none"
               />
 
-              <select className="rounded-lg border border-[#334155] bg-[#0f1726] px-4 py-3 text-white">
-                <option>Todas (incl. wishlist)</option>
-                <option>Não lidas</option>
-                <option>Lendo</option>
-                <option>Lidas</option>
+              <select
+                value={statusFiltro}
+                onChange={(e) => {
+                  setStatusFiltro(e.target.value);
+                  setPaginaAtual(1);
+                }}
+                className="rounded-lg border border-[#334155] bg-[#0f1726] px-4 py-3 text-white"
+              >
+                <option value="">Todas (incl. wishlist)</option>
+                <option value={HQUsuarioStatus.NAO_LIDA}>Não lidas</option>
+                <option value={HQUsuarioStatus.LENDO}>Lendo</option>
+                <option value={HQUsuarioStatus.LIDA}>Lidas</option>
               </select>
 
-              <select className="rounded-lg border border-[#334155] bg-[#0f1726] px-4 py-3 text-white">
-                <option>Todas as editoras</option>
+              <select
+                value={editoraFiltro}
+                onChange={(e) => {
+                  setEditoraFiltro(e.target.value);
+                  setPaginaAtual(1);
+                }}
+                className="rounded-lg border border-[#334155] bg-[#0f1726] px-4 py-3 text-white"
+              >
+                <option value="">Todas as editoras</option>
 
                 {colecao.editoras.map((editora) => (
                   <option key={editora.id} value={editora.id}>
@@ -119,8 +173,15 @@ export default function MinhaColecaoPage() {
                 ))}
               </select>
 
-              <select className="rounded-lg border border-[#334155] bg-[#0f1726] px-4 py-3 text-white">
-                <option>Todos os autores</option>
+              <select
+                value={autorFiltro}
+                onChange={(e) => {
+                  setAutorFiltro(e.target.value);
+                  setPaginaAtual(1);
+                }}
+                className="rounded-lg border border-[#334155] bg-[#0f1726] px-4 py-3 text-white"
+              >
+                <option value="">Todos os autores</option>
 
                 {colecao.autores.map((autor) => (
                   <option key={autor.id} value={autor.id}>
@@ -131,20 +192,27 @@ export default function MinhaColecaoPage() {
             </div>
           </div>
 
-          <div className="mt-8 grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {colecao.items.map((hq) => (
-              <HQCard
-                key={hq.id}
-                hq={hq}
-              />
-            ))}
-          </div>
+          {colecao.items.length === 0 ? (
+            <div className="mt-8 flex min-h-[150px] items-center justify-center rounded-xl border border-[#28374e] bg-[#1d2a3d] px-5 text-center">
+              <p className="text-base text-[#9fb5d1]">
+                Nenhuma HQ encontrada com esses filtros.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="mt-8 grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                {colecao.items.map((hq) => (
+                  <HQCard key={hq.id} hq={hq} />
+                ))}
+              </div>
 
-          <Pagination
-            currentPage={colecao.currentPage}
-            totalPages={colecao.totalPages}
-            onPageChange={setPaginaAtual}
-          />
+              <Pagination
+                currentPage={colecao.currentPage}
+                totalPages={colecao.totalPages}
+                onPageChange={setPaginaAtual}
+              />
+            </>
+          )}
         </section>
       </div>
 

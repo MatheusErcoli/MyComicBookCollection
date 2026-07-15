@@ -29,6 +29,8 @@ const emptyResumo: DashboardResumo = {
   lendo: 0,
   naoLidas: 0,
   wishlist: 0,
+  valorColecao: 0,
+  totalInvestido: 0,
   ultimasAdicionadas: [],
 };
 
@@ -100,14 +102,14 @@ export default function DashboardPage() {
         color: "text-red-500",
       },
       {
-        label: "Media de notas",
-        value: "0.0",
-        icon: StarIcon,
+        label: "Valor da coleção",
+        value: `R$ ${resumo.valorColecao.toFixed(2)}`,
+        icon: DollarIcon,
         color: "text-yellow-400",
       },
       {
         label: "Investido",
-        value: "R$ 0.00",
+        value: `R$ ${resumo.totalInvestido.toFixed(2)}`,
         icon: DollarIcon,
         color: "text-emerald-500",
       },

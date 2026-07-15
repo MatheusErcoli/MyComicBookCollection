@@ -5,7 +5,7 @@ import { getPaginacao, getPaginacaoDados } from "../utils/paginacao";
 export default class CollectionController {
   static async index(req: any, res: Response, next: NextFunction) {
     try {
-      const { page, limit, status } = req.query;
+      const { page, limit, status, search, editoraId, autorId } = req.query;
 
       const { limit: limitNumber, offset, page: pageNumber } = getPaginacao(
         Number(page),
@@ -16,7 +16,16 @@ export default class CollectionController {
         req.userId,
         limitNumber,
         offset,
-        typeof status === "string" ? status : undefined
+        {
+          ...(typeof status === "string" && status ? { status } : {}),
+          ...(typeof search === "string" && search ? { search } : {}),
+          ...(typeof editoraId === "string" && editoraId
+            ? { editoraId: Number(editoraId) }
+            : {}),
+          ...(typeof autorId === "string" && autorId
+            ? { autorId: Number(autorId) }
+            : {}),
+        }
       );
 
       const response = getPaginacaoDados(

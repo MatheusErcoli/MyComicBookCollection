@@ -63,6 +63,7 @@ export default function HQManager({
   const [autorIds, setAutorIds] = useState<number[]>([]);
   const [desenhistaIds, setDesenhistaIds] = useState<number[]>([]);
   const [volumeIds, setVolumeIds] = useState<number[]>([]);
+  const [qtdVolumesRecentes, setQtdVolumesRecentes] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [loadingEdit, setLoadingEdit] = useState(false);
@@ -89,7 +90,24 @@ export default function HQManager({
     setAutorIds([]);
     setDesenhistaIds([]);
     setVolumeIds([]);
+    setQtdVolumesRecentes("");
     setEditingId(null);
+  }
+
+  function handleSelecionarUltimosVolumes() {
+    const quantidade = Number(qtdVolumesRecentes);
+
+    if (!quantidade || quantidade <= 0) {
+      return;
+    }
+
+    // Assume que ids maiores = volumes cadastrados mais recentemente
+    const ultimosVolumes = [...volumes]
+      .sort((a, b) => b.id - a.id)
+      .slice(0, quantidade)
+      .map((volume) => volume.id);
+
+    setVolumeIds(ultimosVolumes);
   }
 
   async function startEdit(hq: HQ) {
@@ -395,6 +413,35 @@ export default function HQManager({
               emptyMessage="Nenhum desenhista cadastrado ainda."
             />
           </div>
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm text-white">
+            Quantidade de volumes na HQ
+          </label>
+          <div className="flex flex-wrap gap-3">
+            <input
+              type="number"
+              min={1}
+              value={qtdVolumesRecentes}
+              onChange={(e) => setQtdVolumesRecentes(e.target.value)}
+              placeholder="ex: 8"
+              className="w-full max-w-xs rounded-lg border border-[#334155] bg-[#0f1726] px-4 py-3 text-white placeholder:text-slate-500 focus:border-red-500 focus:outline-none"
+            />
+
+            <button
+              type="button"
+              onClick={handleSelecionarUltimosVolumes}
+              className="rounded-lg border border-[#334155] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#0f1726]"
+            >
+              Selecionar últimos volumes
+            </button>
+          </div>
+          <p className="mt-2 text-xs text-[#7c95b8]">
+            Informe quantos volumes essa HQ ocupa e clique no botão para
+            marcar automaticamente os últimos volumes cadastrados na lista
+            abaixo.
+          </p>
         </div>
 
         <div>

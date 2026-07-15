@@ -111,8 +111,14 @@ export default function DetalheColecaoPage() {
 
       const atualizado = await atualizarItemColecao(itemId, {
         status: status || undefined,
-        nota: nota !== "" ? Number(nota) : null,
-        prioridade: prioridade !== "" ? Number(prioridade) : null,
+        nota:
+          status !== HQUsuarioStatus.WISHLIST && nota !== ""
+            ? Number(nota)
+            : null,
+        prioridade:
+          status === HQUsuarioStatus.WISHLIST && prioridade !== ""
+            ? Number(prioridade)
+            : null,
         data_aquisicao: dataAquisicao || null,
       });
 
@@ -343,31 +349,35 @@ export default function DetalheColecaoPage() {
                       </select>
                     </div>
 
-                    <div>
-                      <label className="mb-2 block text-sm text-white">
-                        Nota (0-10)
-                      </label>
-                      <input
-                        type="number"
-                        min={0}
-                        max={10}
-                        value={nota}
-                        onChange={(e) => setNota(e.target.value)}
-                        className="w-full rounded-lg border border-[#334155] bg-[#0f1726] px-4 py-3 text-white focus:border-red-500 focus:outline-none"
-                      />
-                    </div>
+                    {status !== HQUsuarioStatus.WISHLIST ? (
+                      <div>
+                        <label className="mb-2 block text-sm text-white">
+                          Nota (0-10)
+                        </label>
+                        <input
+                          type="number"
+                          min={0}
+                          max={10}
+                          value={nota}
+                          onChange={(e) => setNota(e.target.value)}
+                          className="w-full rounded-lg border border-[#334155] bg-[#0f1726] px-4 py-3 text-white focus:border-red-500 focus:outline-none"
+                        />
+                      </div>
+                    ) : null}
 
-                    <div>
-                      <label className="mb-2 block text-sm text-white">
-                        Prioridade
-                      </label>
-                      <input
-                        type="number"
-                        value={prioridade}
-                        onChange={(e) => setPrioridade(e.target.value)}
-                        className="w-full rounded-lg border border-[#334155] bg-[#0f1726] px-4 py-3 text-white focus:border-red-500 focus:outline-none"
-                      />
-                    </div>
+                    {status === HQUsuarioStatus.WISHLIST ? (
+                      <div>
+                        <label className="mb-2 block text-sm text-white">
+                          Prioridade
+                        </label>
+                        <input
+                          type="number"
+                          value={prioridade}
+                          onChange={(e) => setPrioridade(e.target.value)}
+                          className="w-full rounded-lg border border-[#334155] bg-[#0f1726] px-4 py-3 text-white focus:border-red-500 focus:outline-none"
+                        />
+                      </div>
+                    ) : null}
 
                     <div>
                       <label className="mb-2 block text-sm text-white">

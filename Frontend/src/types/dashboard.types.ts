@@ -27,5 +27,7 @@ export interface DashboardResumo {
   lendo: number;
   naoLidas: number;
   wishlist: number;
+  valorColecao: number;
+  totalInvestido: number;
   ultimasAdicionadas: UltimaHQ[];
 }
