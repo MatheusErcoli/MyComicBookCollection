@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 import Sidebar from "@/src/components/Sidebar";
 import {
@@ -13,30 +13,34 @@ import {
   SettingsIcon,
   SunIcon,
   LogoutIcon,
-  BookmarkIcon,
 } from "@/src/components/icons";
 
 import { logout } from "@/src/services/auth.service";
 import { getAuthToken, getStoredUser } from "@/src/services/auth-storage";
 import { getApiErrorMessage } from "@/src/services/api";
-import { listarColecoes } from "@/src/services/admin.service";
+import { buscarColecao } from "@/src/services/admin.service";
 import { buscarMinhaColecao } from "@/src/services/colecaoPagina.service";
-import { Colecao } from "@/src/types/admin.types";
+import { atualizarItemColecao } from "@/src/services/minhaColecaoItem";
+import { Colecao, SagaHQItem } from "@/src/types/admin.types";
+import { HQUsuarioStatus } from "@/src/types/minhaColecaoItem";
 
-interface SagaComProgresso extends Colecao {
-  ownedCount: number;
-  totalCount: number;
-  percent: number;
+interface HQPossuida {
+  itemId: number;
+  status: HQUsuarioStatus | null;
 }
 
-export default function SagasPage() {
+export default function SagaDetalhePage() {
+  const params = useParams<{ id: string }>();
   const router = useRouter();
 
+  const sagaId = Number(params.id);
+
   const [email, setEmail] = useState("");
-  const [colecoes, setColecoes] = useState<Colecao[]>([]);
-  const [ownedHqIds, setOwnedHqIds] = useState<number[]>([]);
+  const [saga, setSaga] = useState<Colecao | null>(null);
+  const [possuidas, setPossuidas] = useState<Record<number, HQPossuida>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [atualizandoId, setAtualizandoId] = useState<number | null>(null);
 
   useEffect(() => {
     const token = getAuthToken();
@@ -53,48 +57,91 @@ export default function SagasPage() {
       setEmail(usuario?.email ?? "");
 
       try {
-        const [colecoesData, minhaColecao] = await Promise.all([
-          listarColecoes(),
+        const [sagaData, minhaColecao] = await Promise.all([
+          buscarColecao(sagaId),
           buscarMinhaColecao(1, 1000),
         ]);
 
-        setColecoes(colecoesData);
-        setOwnedHqIds(minhaColecao.items.map((item) => item.hq_id));
+        setSaga(sagaData);
+
+        const mapa: Record<number, HQPossuida> = {};
+        minhaColecao.items.forEach((item) => {
+          mapa[item.hq_id] = {
+            itemId: item.id,
+            status: (item.status as HQUsuarioStatus) ?? null,
+          };
+        });
+        setPossuidas(mapa);
       } catch (err) {
-        setError(getApiErrorMessage(err, "Erro ao carregar as sagas."));
+        setError(getApiErrorMessage(err, "Erro ao carregar a saga."));
       } finally {
         setLoading(false);
       }
     }
 
-    carregar();
-  }, [router]);
+    if (!Number.isNaN(sagaId)) {
+      carregar();
+    }
+  }, [sagaId, router]);
 
-  const sagas = useMemo<SagaComProgresso[]>(() => {
-    return colecoes.map((colecao) => {
-      const hqsDaSaga = colecao.hq ?? [];
-      const totalCatalogado = hqsDaSaga.length;
+  const hqsOrdenadas = useMemo<SagaHQItem[]>(() => {
+    const lista = saga?.hq ?? [];
 
-      const totalCount =
-        colecao.qtd_volumes && colecao.qtd_volumes > 0
-          ? colecao.qtd_volumes
-          : totalCatalogado;
+    return [...lista].sort((a, b) => {
+      const ordemA = a.HQColecao?.ordem ?? Number.MAX_SAFE_INTEGER;
+      const ordemB = b.HQColecao?.ordem ?? Number.MAX_SAFE_INTEGER;
 
-      const ownedCount = hqsDaSaga.filter((hq) =>
-        ownedHqIds.includes(hq.id)
-      ).length;
+      if (ordemA !== ordemB) {
+        return ordemA - ordemB;
+      }
 
-      const percent =
-        totalCount > 0 ? Math.round((ownedCount / totalCount) * 100) : 0;
-
-      return {
-        ...colecao,
-        ownedCount,
-        totalCount,
-        percent,
-      };
+      return a.id - b.id;
     });
-  }, [colecoes, ownedHqIds]);
+  }, [saga]);
+
+  const totalCount = useMemo(() => {
+    if (saga?.qtd_volumes && saga.qtd_volumes > 0) {
+      return saga.qtd_volumes;
+    }
+
+    return hqsOrdenadas.length;
+  }, [saga, hqsOrdenadas]);
+
+  const ownedCount = useMemo(() => {
+    return hqsOrdenadas.filter((hq) => possuidas[hq.id]).length;
+  }, [hqsOrdenadas, possuidas]);
+
+  const percent = totalCount > 0 ? Math.round((ownedCount / totalCount) * 100) : 0;
+
+  async function handleToggleLida(hq: SagaHQItem) {
+    const possuida = possuidas[hq.id];
+
+    if (!possuida) {
+      return;
+    }
+
+    const novoStatus =
+      possuida.status === HQUsuarioStatus.LIDA
+        ? HQUsuarioStatus.NAO_LIDA
+        : HQUsuarioStatus.LIDA;
+
+    setError("");
+
+    try {
+      setAtualizandoId(hq.id);
+
+      await atualizarItemColecao(possuida.itemId, { status: novoStatus });
+
+      setPossuidas((prev) => ({
+        ...prev,
+        [hq.id]: { ...prev[hq.id], status: novoStatus },
+      }));
+    } catch (err) {
+      setError(getApiErrorMessage(err, "Erro ao atualizar status de leitura."));
+    } finally {
+      setAtualizandoId(null);
+    }
+  }
 
   return (
     <main className="min-h-screen bg-[#0f1726] text-white">
@@ -114,80 +161,144 @@ export default function SagasPage() {
         />
 
         <section className="flex-1 px-5 py-6 md:px-8 lg:px-8">
-          <header>
-            <h1 className="text-[32px] font-bold leading-tight tracking-normal text-white">
-              Sagas & Arcos
-            </h1>
-            <p className="mt-1 text-base text-[#a8c4e8]">
-              Acompanhe o progresso das suas coleções
-            </p>
-          </header>
+          <button
+            type="button"
+            onClick={() => router.push("/sagas")}
+            className="flex items-center gap-2 text-sm text-[#9fb5d1] transition hover:text-white"
+          >
+            ← Voltar
+          </button>
 
           {error ? (
-            <div className="mt-8 rounded-xl border border-red-900/60 bg-red-950/30 px-5 py-4 text-sm text-red-200">
+            <div className="mt-4 rounded-xl border border-red-900/60 bg-red-950/30 px-5 py-4 text-sm text-red-200">
               {error}
             </div>
           ) : null}
 
-          <div className="mt-8">
-            {loading ? (
-              <p className="text-sm text-[#7c95b8]">Carregando...</p>
-            ) : sagas.length === 0 ? (
-              <div className="flex min-h-[122px] items-center justify-center rounded-xl border border-[#28374e] bg-[#1d2a3d] px-5 text-center">
-                <p className="text-base text-[#a8c4e8]">
-                  Nenhuma saga cadastrada ainda. Cadastre uma coleção na área
-                  de Admin.
+          {loading ? (
+            <p className="mt-6 text-sm text-[#7c95b8]">Carregando...</p>
+          ) : !saga ? (
+            <p className="mt-6 text-sm text-[#7c95b8]">
+              Saga não encontrada.
+            </p>
+          ) : (
+            <>
+              <h1 className="mt-4 text-[32px] font-bold leading-tight text-white">
+                {saga.nome}
+              </h1>
+
+              {saga.ano_publicacao ? (
+                <p className="mt-1 text-base text-[#7c95b8]">
+                  {saga.ano_publicacao}
                 </p>
+              ) : null}
+
+              {saga.descricao ? (
+                <p className="mt-2 text-white">{saga.descricao}</p>
+              ) : null}
+
+              <div className="mt-6 rounded-xl border border-[#28374e] bg-[#1d2a3d] p-5">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-[#a8c4e8]">
+                    Progresso: {ownedCount} / {totalCount}
+                  </span>
+                  <span className="font-semibold text-white">{percent}%</span>
+                </div>
+
+                <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[#0f1726]">
+                  <div
+                    className="h-full rounded-full bg-red-500 transition-all"
+                    style={{ width: `${Math.min(percent, 100)}%` }}
+                  />
+                </div>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {sagas.map((saga) => (
-                  <article
-                    key={saga.id}
-                    onClick={() => router.push(`/sagas/${saga.id}`)}
-                    className="cursor-pointer rounded-xl border border-[#28374e] bg-[#1d2a3d] p-5 transition duration-200 hover:scale-[1.02] hover:border-red-500"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <h2 className="text-lg font-bold text-white">
-                          {saga.nome}
-                        </h2>
-                        {saga.ano_publicacao ? (
-                          <p className="mt-0.5 text-sm text-[#7c95b8]">
-                            {saga.ano_publicacao}
-                          </p>
-                        ) : null}
-                      </div>
 
-                      <BookmarkIcon className="h-5 w-5 shrink-0 text-[#7c95b8]" />
-                    </div>
+              <h2 className="mt-8 text-xl font-bold text-white">
+                Ordem de leitura
+              </h2>
 
-                    {saga.descricao ? (
-                      <p className="mt-4 text-sm text-[#a8c4e8]">
-                        {saga.descricao}
-                      </p>
-                    ) : null}
+              {hqsOrdenadas.length === 0 ? (
+                <p className="mt-3 text-sm text-[#7c95b8]">
+                  Nenhuma HQ vinculada a esta saga ainda. Vincule HQs a ela na
+                  área de Admin.
+                </p>
+              ) : (
+                <div className="mt-3 space-y-3">
+                  {hqsOrdenadas.map((hq, index) => {
+                    const possuida = possuidas[hq.id];
+                    const lida = possuida?.status === HQUsuarioStatus.LIDA;
 
-                    <div className="mt-5 flex items-center justify-between text-sm">
-                      <span className="text-[#a8c4e8]">
-                        {saga.ownedCount} / {saga.totalCount} volumes
-                      </span>
-                      <span className="font-semibold text-white">
-                        {saga.percent}%
-                      </span>
-                    </div>
-
-                    <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#0f1726]">
+                    return (
                       <div
-                        className="h-full rounded-full bg-red-500 transition-all"
-                        style={{ width: `${Math.min(saga.percent, 100)}%` }}
-                      />
-                    </div>
-                  </article>
-                ))}
-              </div>
-            )}
-          </div>
+                        key={hq.id}
+                        onClick={() => router.push(`/minha-colecao/${possuida?.itemId ?? ""}`)}
+                        className={
+                          possuida
+                            ? "flex cursor-pointer items-center gap-4 rounded-xl border border-[#28374e] bg-[#1d2a3d] p-4 transition hover:border-red-500"
+                            : "flex items-center gap-4 rounded-xl border border-[#28374e] bg-[#1d2a3d] p-4 opacity-70"
+                        }
+                      >
+                        <span className="w-5 shrink-0 text-sm text-[#7c95b8]">
+                          {index + 1}
+                        </span>
+
+                        <div className="h-14 w-10 shrink-0 overflow-hidden rounded bg-[#0f1726]">
+                          {hq.capa_url ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={hq.capa_url}
+                              alt={hq.titulo}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : null}
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate font-medium text-white">
+                            {hq.titulo}
+                          </p>
+                          <p className="truncate text-sm text-[#7c95b8]">
+                            {hq.editora?.nome ?? "Sem editora"}
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleToggleLida(hq);
+                          }}
+                          disabled={!possuida || atualizandoId === hq.id}
+                          title={
+                            possuida
+                              ? "Marcar como lida"
+                              : "Adicione esta HQ à sua coleção para marcar como lida"
+                          }
+                          className={
+                            lida
+                              ? "flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-red-500 text-white disabled:opacity-60"
+                              : "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#7c95b8] disabled:opacity-40"
+                          }
+                        >
+                          {lida ? (
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="3"
+                              className="h-3.5 w-3.5"
+                            >
+                              <path d="M5 13l4 4L19 7" />
+                            </svg>
+                          ) : null}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          )}
         </section>
       </div>
     </main>
