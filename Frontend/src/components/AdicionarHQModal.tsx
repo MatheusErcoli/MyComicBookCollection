@@ -15,11 +15,17 @@ import { HQUsuarioStatus } from "@/src/types/minhaColecaoItem";
 interface AdicionarHQModalProps {
   onClose: () => void;
   onAdicionado: () => void;
+  statusPadrao?: HQUsuarioStatus;
+  titulo?: string;
+  subtitulo?: string;
 }
 
 export default function AdicionarHQModal({
   onClose,
   onAdicionado,
+  statusPadrao = HQUsuarioStatus.NAO_LIDA,
+  titulo = "Adicionar HQ",
+  subtitulo = "Últimas HQs cadastradas no catálogo",
 }: AdicionarHQModalProps) {
   const [hqs, setHqs] = useState<HQ[]>([]);
   const [idsNaColecao, setIdsNaColecao] = useState<number[]>([]);
@@ -91,7 +97,7 @@ export default function AdicionarHQModal({
       await adicionarItemColecao({
         usuario_id: usuario.id,
         hq_id: hq.id,
-        status: HQUsuarioStatus.NAO_LIDA,
+        status: statusPadrao,
       });
 
       setAdicionadosIds((prev) => [...prev, hq.id]);
@@ -108,10 +114,8 @@ export default function AdicionarHQModal({
       <div className="flex max-h-[85vh] w-full max-w-2xl flex-col rounded-xl border border-[#28374e] bg-[#1d2a3d] p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-white">Adicionar HQ</h2>
-            <p className="mt-1 text-sm text-[#9fb5d1]">
-              Últimas HQs cadastradas no catálogo
-            </p>
+            <h2 className="text-xl font-bold text-white">{titulo}</h2>
+            <p className="mt-1 text-sm text-[#9fb5d1]">{subtitulo}</p>
           </div>
 
           <button

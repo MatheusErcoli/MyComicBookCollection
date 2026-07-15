@@ -5,7 +5,7 @@ import { getPaginacao, getPaginacaoDados } from "../utils/paginacao";
 export default class CollectionController {
   static async index(req: any, res: Response, next: NextFunction) {
     try {
-      const { page, limit } = req.query;
+      const { page, limit, status } = req.query;
 
       const { limit: limitNumber, offset, page: pageNumber } = getPaginacao(
         Number(page),
@@ -15,7 +15,8 @@ export default class CollectionController {
       const data = await CollectionService.index(
         req.userId,
         limitNumber,
-        offset
+        offset,
+        typeof status === "string" ? status : undefined
       );
 
       const response = getPaginacaoDados(

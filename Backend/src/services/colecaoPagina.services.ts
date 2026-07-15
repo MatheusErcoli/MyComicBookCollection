@@ -7,11 +7,13 @@ export default class CollectionService {
   static async index(
     userId: number,
     limit: number,
-    offset: number
+    offset: number,
+    status?: string
   ) {
     const { count, rows } = await HQUsuario.findAndCountAll({
       where: {
         usuario_id: userId,
+        ...(status ? { status } : {}),
       },
       include: [
         {
