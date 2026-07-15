@@ -144,7 +144,8 @@ export default function SagasPage() {
                 {sagas.map((saga) => (
                   <article
                     key={saga.id}
-                    className="rounded-xl border border-[#28374e] bg-[#1d2a3d] p-5"
+                    onClick={() => router.push(`/sagas/${saga.id}`)}
+                    className="cursor-pointer rounded-xl border border-[#28374e] bg-[#1d2a3d] p-5 transition duration-200 hover:scale-[1.02] hover:border-red-500"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
