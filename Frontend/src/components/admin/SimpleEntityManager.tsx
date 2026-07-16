@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { getApiErrorMessage } from "@/src/services/api";
+import Pagination from "@/src/components/Pagination";
 
 export interface EntityField {
   key: string;
@@ -25,6 +26,7 @@ interface SimpleEntityManagerProps<T extends EntityItem> {
   onDelete: (id: number) => Promise<void>;
   renderItemTitle: (item: T) => string;
   renderItemSubtitle?: (item: T) => string | null;
+  pageSize?: number;
 }
 
 function buildEmptyForm(fields: EntityField[]) {
@@ -46,6 +48,7 @@ export default function SimpleEntityManager<T extends EntityItem>({
   onDelete,
   renderItemTitle,
   renderItemSubtitle,
+  pageSize,
 }: SimpleEntityManagerProps<T>) {
   const [form, setForm] = useState<Record<string, string>>(() =>
     buildEmptyForm(fields)
@@ -53,6 +56,7 @@ export default function SimpleEntityManager<T extends EntityItem>({
   const [editingId, setEditingId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [paginaAtual, setPaginaAtual] = useState(1);
 
   function handleChange(key: string, value: string) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -138,6 +142,17 @@ export default function SimpleEntityManager<T extends EntityItem>({
     }
   }
 
+  const totalPages = pageSize
+    ? Math.max(1, Math.ceil(items.length / pageSize))
+    : 1;
+  const paginaEfetiva = Math.min(paginaAtual, totalPages);
+  const itemsPagina = pageSize
+    ? items.slice(
+        (paginaEfetiva - 1) * pageSize,
+        paginaEfetiva * pageSize
+      )
+    : items;
+
   return (
     <div className="rounded-xl border border-[#28374e] bg-[#1d2a3d] p-6">
       <h2 className="text-xl font-bold text-white">{title}</h2>
@@ -204,7 +219,7 @@ export default function SimpleEntityManager<T extends EntityItem>({
         {items.length === 0 ? (
           <p className="text-sm text-[#7c95b8]">Nenhum registro cadastrado ainda.</p>
         ) : (
-          items.map((item) => (
+          itemsPagina.map((item) => (
             <div
               key={item.id}
               className="flex items-center justify-between rounded-lg border border-[#28374e] bg-[#0f1726] px-4 py-3"
@@ -236,6 +251,14 @@ export default function SimpleEntityManager<T extends EntityItem>({
             </div>
           ))
         )}
+
+        {pageSize && totalPages > 1 ? (
+          <Pagination
+            currentPage={paginaEfetiva}
+            totalPages={totalPages}
+            onPageChange={setPaginaAtual}
+          />
+        ) : null}
       </div>
     </div>
   );

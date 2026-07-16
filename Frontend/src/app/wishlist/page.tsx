@@ -58,11 +58,9 @@ export default function WishlistPage() {
       const usuario = getStoredUser();
       setEmail(usuario?.email ?? "");
 
-      const data = await buscarMinhaColecao(
-        paginaAtual,
-        20,
-        HQUsuarioStatus.WISHLIST
-      );
+      const data = await buscarMinhaColecao(paginaAtual, 20, {
+        status: HQUsuarioStatus.WISHLIST,
+      });
 
       setColecao(data);
     }

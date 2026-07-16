@@ -15,7 +15,6 @@ import {
   BarIcon,
   CheckIcon,
   HeartIcon,
-  StarIcon,
   DollarIcon,
   ArchiveIcon,
   SettingsIcon,

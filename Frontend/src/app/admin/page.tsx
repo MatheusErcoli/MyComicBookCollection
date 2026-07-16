@@ -196,6 +196,7 @@ export default function AdminPage() {
                 {activeTab === "volumes" ? (
                   <SimpleEntityManager<Volume>
                     title="Volumes"
+                    pageSize={10}
                     fields={[
                       {
                         key: "numero_volume",
